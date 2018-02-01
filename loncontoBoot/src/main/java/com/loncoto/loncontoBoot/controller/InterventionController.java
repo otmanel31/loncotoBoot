@@ -58,7 +58,7 @@ public class InterventionController {
 		return this.interventionRepo.findAll(p);
 	}
 	
-	/* OLD VERSION 
+	/* OLD VERSION with planificator service
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/pliste", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

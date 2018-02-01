@@ -1,10 +1,12 @@
 package com.loncoto.loncontoBoot.services;
 
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.loncoto.loncontoBoot.metier.Intervention;
@@ -23,6 +25,28 @@ public class PlannificatorService {
 	public Page<Intervention> getIntervention(){
 		return null;
 	}
+	
+	
+	public Page<Intervention> liste(Pageable page){
+		return this.interventionDao.findAll(page);
+	}
+	
+	public Page<Intervention> listeFilteredByStatus(Pageable page, String status){
+		return this.interventionDao.findByStatusEquals(status, page);
+	}
+	
+	public Page<Intervention> listeFilteredByDateIntervention(Pageable page, LocalDateTime date){
+		return this.interventionDao.findByInterventionDateEquals(date, page);
+	}
+	
+	public Page<Intervention> listeFilteredByClient(Pageable page, String client){
+		return this.interventionDao.findByEquipmentClientNameEquals(client, page);
+	}
+	
+	public Page<Intervention> listeFilteredBySite(Pageable page, String site){
+		return this.interventionDao.findByEquipmentClientSites_name(site, page);
+	}
+	
 	
 	public Intervention plannifier(Intervention i) {
 		if (i == null || i.getIntervenant() == null) throw new InterventionException("La mission ne peut etre NULL ou vous devez fournir un intervenant");
