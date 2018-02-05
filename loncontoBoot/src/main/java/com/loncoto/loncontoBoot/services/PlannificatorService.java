@@ -22,35 +22,42 @@ public class PlannificatorService {
 		this.interventionDao = i;
 	}
 	
-	public Page<Intervention> getIntervention(){
-		return null;
+	// find one
+	public Intervention getIntervention(int id){
+		return this.interventionDao.findOne(id);
 	}
 	
-	
+	// find all
 	public Page<Intervention> liste(Pageable page){
 		return this.interventionDao.findAll(page);
 	}
 	
+	//find by status
 	public Page<Intervention> listeFilteredByStatus(Pageable page, String status){
 		return this.interventionDao.findByStatusEquals(status, page);
 	}
 	
+	// find by date intervention beginning
 	public Page<Intervention> listeFilteredByDateIntervention(Pageable page, LocalDateTime date){
 		return this.interventionDao.findByInterventionDateEquals(date, page);
 	}
 	
+	// find by client
 	public Page<Intervention> listeFilteredByClient(Pageable page, String client){
 		return this.interventionDao.findByEquipmentClientNameEquals(client, page);
 	}
 	
+	// find by site
 	public Page<Intervention> listeFilteredBySite(Pageable page, String site){
-		return this.interventionDao.findByEquipmentClientSites_name(site, page);
+		return this.interventionDao.findByEquipment_Salle_Etage_Batiment_Site_Name(site, page);
 	}
 	
-	
+	// create
 	public Intervention plannifier(Intervention i) {
 		if (i == null || i.getIntervenant() == null) throw new InterventionException("La mission ne peut etre NULL ou vous devez fournir un intervenant");
-		if (i.getDateOfCompletion().isBefore(i.getInterventionDate())) throw new InterventionException("Une fin d'intervention doit etre superieur a la date de debut");
+		if (i.getInterventionDate() == null ) throw new InterventionException("Une une date d'intervention doit etre présente");
+		if (i.getInterventionDate() != null && i.getDateOfCompletion() != null)
+			if (i.getDateOfCompletion().isBefore(i.getInterventionDate())) throw new InterventionException("Une fin d'intervention doit etre superieur a la date de debut");
 		long duration = (i.getInterventionDate().until(i.getDateOfCompletion(), ChronoUnit.MINUTES));
 		if (duration < 30 || duration > 240) throw new InterventionException("Une intervention ne peut etre superieur a 'h ou inferieur à min");
 		
@@ -76,6 +83,5 @@ public class PlannificatorService {
 		public IntervenantAvailableException(String message) {
 			super(message);
 		}
-		
 	}
 }

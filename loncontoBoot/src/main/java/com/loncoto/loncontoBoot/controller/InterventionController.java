@@ -39,7 +39,7 @@ public class InterventionController {
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/pliste", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Page<Intervention> findAll(@PageableDefault(page=0, size=4) Pageable p,
+	public Page<Intervention> findAll(@PageableDefault(page=0, size=4) Pageable page,
 			@RequestParam("status") Optional<String> status,
 			@RequestParam("site") Optional<String> site,
 			@RequestParam("client") Optional<String> client,
@@ -50,12 +50,20 @@ public class InterventionController {
 		this.log.info("client intervention: " + client.orElse("no clients"));
 		this.log.info("date intervention: " + status.orElse("no date"));
 		
-		if (status.isPresent()) return this.interventionRepo.findByStatusEquals(status.get(), p);
-		// tbd if (site.isPresent()) return this.interventionRepo.
-		if (client.isPresent()) return this.interventionRepo.findByEquipmentClientNameEquals(client.get(), p);
-		if (date.isPresent()) return this.interventionRepo.findByInterventionDateEquals(LocalDateTime.parse(date.get()), p);
+		if (status.isPresent()) return this.planifService.listeFilteredByStatus(page, status.get());
+		if (site.isPresent()) return this.planifService.listeFilteredBySite(page, site.get());
+		if (client.isPresent()) return this.planifService.listeFilteredByClient(page, client.get());
+		if (date.isPresent()) return this.planifService.listeFilteredByDateIntervention(page, LocalDateTime.parse(date.get()));
 		
-		return this.interventionRepo.findAll(p);
+		return this.planifService.liste(page);
+	}
+	
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/create", method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Intervention create(@RequestBody Intervention i) {
+		this.log.info("in create ********************************");
+		return this.planifService.plannifier(i);
 	}
 	
 	/* OLD VERSION with planificator service

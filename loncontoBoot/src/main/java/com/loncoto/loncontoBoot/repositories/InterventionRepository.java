@@ -13,7 +13,7 @@ import com.loncoto.loncontoBoot.metier.Intervention;
 
 public interface InterventionRepository extends PagingAndSortingRepository<Intervention, Integer> {
 	// intervention par site
-	Page<Intervention> findByEquipmentClientSites_name(String name, Pageable page); // OR
+	Page<Intervention> findByEquipment_Salle_Etage_Batiment_Site_Name(String name, Pageable p);
 	/*@Query("select i from Intervention as i ")
 	Page<Intervention> findAllBySite(@Param("name") String name);*/
 	// intervention par status
