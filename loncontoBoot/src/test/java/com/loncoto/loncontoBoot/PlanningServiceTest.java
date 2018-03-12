@@ -21,6 +21,7 @@ import com.loncoto.loncontoBoot.metier.Intervention;
 import com.loncoto.loncontoBoot.repositories.InterventionRepository;
 import com.loncoto.loncontoBoot.services.PlannificatorService;
 import com.loncoto.loncontoBoot.services.PlannificatorService.IntervenantAvailableException;
+import com.loncoto.loncontoBoot.services.PlannificatorService.InterventionException;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes=TestConfiguration.class)
@@ -50,7 +51,7 @@ public class PlanningServiceTest {
 		inter.setIntervenant(i1);
 		data.add(inter);
 		
-		inter = new Intervention(3, "3A", LocalDateTime.now(), LocalDateTime.now().plusHours(2), "pending", "no comment");
+		inter = new Intervention(3, "3A", LocalDateTime.now().plusMonths(2), LocalDateTime.now().plusHours(2), "pending", "no comment");
 
 		inter.setIntervenant(i2);
 		data.add(inter);
@@ -65,10 +66,27 @@ public class PlanningServiceTest {
 	}
 	
 	@Test
+	public void testFindAllInterventionsForPlanningOK() {
+		// test du findall liste pour le planning front end =+> mois courrant
+		Intervention i = new Intervention(4, "1A", LocalDateTime.now().minusHours(3), LocalDateTime.now().minusHours(1), "terminated", "no comment");
+		i.setIntervenant(getSampleIntervanant().get(1));
+		
+		Mockito.when(interventionDao.findByInterventionDateBetween(Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class)))
+			.thenReturn(getSampleInterventions().stream()
+					.filter(in-> in.getInterventionDate().getMonth() == LocalDateTime.now().getMonth())
+					.collect(Collectors.toList()));
+		List<Intervention> its = this.plannificatorService.findAllForView(LocalDateTime.now().toString());
+		assertEquals("should return 3 elements",2, its.size());
+		
+		// est kil est appelé au moins une fois
+		Mockito.verify(interventionDao, Mockito.atLeastOnce()).findByInterventionDateBetween(Mockito.any(), Mockito.any());
+	}
+	
+	@Test
 	public void testPlannificationInterventionOk() {
 		// AJOUT ICI test interdaofindBy ... 
 		
-		Intervention i = new Intervention(4, "1A", LocalDateTime.now().minusHours(3), LocalDateTime.now().minusHours(1), "pending", "no comment");
+		Intervention i = new Intervention(5, "1A", LocalDateTime.now().minusHours(3), LocalDateTime.now().minusHours(1), "pending", "no comment");
 		i.setIntervenant(getSampleIntervanant().get(0));
 		Intervention i2 = getSampleInterventions().get(1);
 		
@@ -82,6 +100,18 @@ public class PlanningServiceTest {
 		
 	}
 	
+	/*@Test()
+	public void testDeleteInterventionKo() {
+		
+		Mockito.when(interventionDao.findAll()).thenReturn(getSampleInterventions());
+		List<Intervention> its = this.plannificatorService.findAll();
+		
+		interventionDao.delete(getSampleInterventions().get(0));
+		
+		int actual = its.size();
+		assertEquals(4, actual);
+	}*/
+	
 	@Test(expected=IntervenantAvailableException.class)
 	public void testPlannificationInterventionWithIntervenantNotAvailable() {
 		
@@ -94,12 +124,10 @@ public class PlanningServiceTest {
 					.collect(Collectors.toList())
 			);
 					
-		Intervention inter = new Intervention(5, "1A", LocalDateTime.now(), LocalDateTime.now().plusHours(2), "pending", "no comment");
+		Intervention inter = new Intervention(6, "1A", LocalDateTime.now(), LocalDateTime.now().plusHours(2), "pending", "no comment");
 		inter.setIntervenant(getSampleIntervanant().get(0));
 		
 		Intervention result = this.plannificatorService.plannifier(inter);
-		
-		
 	}
 }
  

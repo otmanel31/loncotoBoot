@@ -1,6 +1,7 @@
 package com.loncoto.loncontoBoot.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,15 @@ public class InterventionController {
 	private PlannificatorService planifService;
 	
 	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/planning", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<Intervention> findForPlanning(@RequestParam("month") Optional<String> date){
+		this.log.info("intervention du mois a retourner : " + date.orElse("no date provided"));
+		return this.planifService.findAllForView(date.get());
+	}
+	
+	
+	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/pliste", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Page<Intervention> findAll(@PageableDefault(page=0, size=4) Pageable page,
@@ -66,7 +76,27 @@ public class InterventionController {
 		return this.planifService.plannifier(i);
 	}
 	
-	/* OLD VERSION with planificator service
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/update", method=RequestMethod.PUT, produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Intervention update(@RequestBody Intervention i) {
+		Intervention ii = this.planifService.getIntervention(i.getId());
+		if (ii == null) throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Impossible de mettre à jour une intervention inexistante");
+			
+		return this.planifService.plannifier(i);
+	}
+	
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/delete/{id:[0-9]+}", method=RequestMethod.DELETE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Intervention delete(@PathVariable("id") int id) {
+		Intervention i = this.planifService.getIntervention(id);
+		if (i == null) throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Impossible de supprimer une intervention inexistante");
+		this.planifService.delete(id);
+		return i;
+	}
+	
+	/* OLD VERSION without planificator service
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/pliste", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

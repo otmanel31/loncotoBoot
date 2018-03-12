@@ -31,9 +31,9 @@ public class Intervenant {
 	private Set<Intervention> interventions;
 	@ManyToMany(mappedBy="intervenants")
 	@JsonIgnore
-	private Set<Group> groups;
+	private Set<Groupe> groups;
 	
-	public Set<Group> getGroups(){
+	public Set<Groupe> getGroups(){
 		if (this.groups == null) this.groups = new HashSet<>();
 		return this.groups;
 	}

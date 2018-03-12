@@ -17,7 +17,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class Group {
+public class Groupe {
 	@Id  @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String name;
@@ -30,7 +30,7 @@ public class Group {
 		return this.intervenants;
 	}
 
-	public Group(int id, String name) {
+	public Groupe(int id, String name) {
 		super();
 		this.id = id;
 		this.name = name;

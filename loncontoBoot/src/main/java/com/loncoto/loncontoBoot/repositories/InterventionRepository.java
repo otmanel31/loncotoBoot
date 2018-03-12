@@ -25,9 +25,12 @@ public interface InterventionRepository extends PagingAndSortingRepository<Inter
 	// intervention par intervenant
 	Page<Intervention> findByIntervenantFirstnameEquals(String firstname, Pageable p);
 	// intervention par date de dedbut
-	Page<Intervention> findByInterventionDateEquals(LocalDateTime interventionDate, Pageable p);
+	Page<Intervention> findByInterventionDate(LocalDateTime interventionDate, Pageable p);
 	
 	// on chercher a +1/-1 jours de la mission qu on souhaite programmer pour ne pas 
 	// se retoruver avc un traitement lourd + filtre approfondi par programmation dans le service
 	List<Intervention> findByIntervenantIdAndInterventionDateAndDateOfCompletion(int id, LocalDateTime start, LocalDateTime end);
+
+	// retourne list des missions pour le planning (mois)
+	List<Intervention> findByInterventionDateBetween(LocalDateTime dateDebut, LocalDateTime dateFin);
 }
