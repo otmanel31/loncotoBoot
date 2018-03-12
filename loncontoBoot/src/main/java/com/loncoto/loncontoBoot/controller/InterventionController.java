@@ -140,13 +140,5 @@ public class InterventionController {
 		return this.interventionRepo.save(i);
 	}
 	
-	public String delete(@PathVariable("id") int id){
-		try {
-			this.interventionRepo.delete(id);
-			return "success";
-		} catch (Exception e) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "sa pue");
-		}
-	}
 	*/
 }
